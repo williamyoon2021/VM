@@ -1,3 +1,5 @@
+/* lc3-win.c */
+
 #include <stdint.h> // uint16_t
 #include <stdio.h>  // FILE
 #include <signal.h> // SIGINT
@@ -224,7 +226,7 @@ int main(int argc, const char* argv[])
     /* SETUP */
     signal(SIGINT, handle_interrupt);
     disable_input_buffering();
-    
+
     /* set the PC to starting position */
     /* 0x3000 is the default */
     enum { PC_START = 0x3000 };
@@ -370,7 +372,7 @@ int main(int argc, const char* argv[])
                 {
                     uint16_t r0 = (instr >> 9) & 0x7;
                     uint16_t r1 = (instr >> 6) & 0x7;
-                    uint16_t offset = sign_extend(instr & 03F, 6);
+                    uint16_t offset = sign_extend(instr & 0x3F, 6);
                     mem_write(reg[r1] + offset, reg[r0]);
                 }
                 break;
