@@ -84,6 +84,12 @@ void mem_write(uint16_t address, uint16_t val)
     memory[address] = val;
 }
 
+/* CHECK KEY */
+uint16_t check_key()
+{
+    return WaitForSingleObject(hStdin, 1000) == WAIT_OBJECT_0 && _kbhit();
+}
+
 /* READ MEMORY */
 uint16_t mem_read(uint16_t address)
 {
@@ -102,6 +108,11 @@ uint16_t mem_read(uint16_t address)
     return memory[address];
 }
 
+/* SWAP BIG-ENDIAN TO LITTLE-ENDIAN */
+uint16_t swap16(uint16_t x)
+{
+    return (x << 8) | (x >> 8);
+}
 
 /* READ LC-3 PROGRAM INTO MEM */
 void read_image_file(FILE* file)
@@ -122,12 +133,6 @@ void read_image_file(FILE* file)
         *p = swap16(*p);
         ++p;
     }
-}
-
-/* SWAP BIG-ENDIAN TO LITTLE-ENDIAN */
-uint16_t swap16(uint16_t x)
-{
-    return (x << 8) | (x >> 8);
 }
 
 /* READ IMAGE */
@@ -167,12 +172,6 @@ void update_flags(uint16_t r)
     {
         reg[R_COND] = FL_POS;
     }
-}
-
-/* CHECK KEY */
-uint16_t check_key()
-{
-    return WaitForSingleObject(hStdin, 1000) == WAIT_OBJECT_0 && _kbhit();
 }
 
 /* INPUT BUFFERING WINDOWS */
@@ -443,4 +442,5 @@ int main(int argc, const char* argv[])
     }
     /* WINDOWS SHUTDOWN */
     restore_input_buffering();
+    return 0;
 }
