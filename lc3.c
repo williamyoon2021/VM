@@ -1,5 +1,4 @@
 /* lc3-win.c */
-
 #include <stdint.h> // uint16_t
 #include <stdio.h>  // FILE
 #include <signal.h> // SIGINT
@@ -54,7 +53,7 @@ enum
     TRAP_PUTS = 0x22, /* output a word string */
     TRAP_IN = 0x23, /* get character from keyboard, echoed onto terminal */
     TRAP_PUTSP = 0x24, /* output a byte string */
-    TRAP_HALT = 0x25, /* halt the program */
+    TRAP_HALT = 0x25 /* halt the program */
 };
 
 /* CONDITION FLAGS */
@@ -77,6 +76,24 @@ uint16_t memory[UINT16_MAX]; /* 65536 locations */
 
 /* REGISTERS STORAGE */
 uint16_t reg[R_COUNT];
+
+/* SIGN EXTEND */
+uint16_t sign_extend(uint16_t x, int bit_count)
+{
+    /* checks left-most bit to see if negative  */
+    if (( x >> (bit_count - 1)) & 1) {
+        /* only adds 1 after MSB */
+        x |= (0xFFFF << bit_count);
+    }
+    return x;
+}
+
+/* SWAP BIG-ENDIAN TO LITTLE-ENDIAN */
+uint16_t swap16(uint16_t x)
+{
+    return (x << 8) | (x >> 8);
+}
+
 
 /* WRITE MEMORY */
 void mem_write(uint16_t address, uint16_t val) 
@@ -106,12 +123,6 @@ uint16_t mem_read(uint16_t address)
         }
     }
     return memory[address];
-}
-
-/* SWAP BIG-ENDIAN TO LITTLE-ENDIAN */
-uint16_t swap16(uint16_t x)
-{
-    return (x << 8) | (x >> 8);
 }
 
 /* READ LC-3 PROGRAM INTO MEM */
@@ -144,17 +155,6 @@ int read_image(const char* image_path)
     fclose(file);
     return 1;
 
-}
-
-/* SIGN EXTEND */
-uint16_t sign_extend(uint16_t x, int bit_count)
-{
-    /* checks left-most bit to see if negative  */
-    if (( x >> (bit_count - 1)) & 1) {
-        /* only adds 1 after MSB */
-        x |= (0xFFFF << bit_count);
-    }
-    return x;
 }
 
 /* UPDATE FLAGS */
@@ -433,6 +433,7 @@ int main(int argc, const char* argv[])
                     }
                     break;
                 }
+                break;
             case OP_RES:
             case OP_RTI:
             default:
@@ -442,5 +443,4 @@ int main(int argc, const char* argv[])
     }
     /* WINDOWS SHUTDOWN */
     restore_input_buffering();
-    return 0;
 }
